@@ -1,17 +1,17 @@
 package gui;
 
-import model.MysqlConnection;
-import model.Transakcje;
-import model.User;
+import model.*;
 import net.proteanit.sql.DbUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.util.Vector;
 
-public class KontoGUI {
+public class KontoGUI implements Obserwator {
     static JFrame frame;
     private User l_user;
     public JPanel panel1;
@@ -36,24 +36,25 @@ public class KontoGUI {
     private JTextField txEmail;
     private JTextField txTelefon;
     public JTable table11;
+    private JTextField textField3;
+    private JButton wypłaćButton;
+    private JButton wylogujButton;
     public  Transakcje transakcje;
+    Zegar zegar = new Zegar();
 
     public KontoGUI(User l_user){
         this.l_user=l_user;
-        refresh();
-        try {
-            table();
-        }catch (SQLException e){
-            e.printStackTrace();
-        }catch (ClassNotFoundException ex){
-            ex.printStackTrace();
-        }
+        refresh_data();
+        zegar.subscribe(this);
+        zegar.uruchom();
+
+
         wykonajPrzelewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Transakcje t=new Transakcje(l_user,textField6.getText(),textField4.getText(),textField5.getText(),textField7.getText(),"Przelew");
                 l_user.setUser_stanKonta(t.przelew());
-                refresh();
+                refresh_data();
             }
         });
         wpłaćButton.addActionListener(new ActionListener() {
@@ -62,8 +63,8 @@ public class KontoGUI {
                Transakcje t=new Transakcje(l_user," "," ",kwota.getText(),"Wpłata środków","Wpłata");
                 try {
 
-                    l_user.setUser_stanKonta(t.wplata(l_user.getUser_stanKonta(),l_user.getUser_login()));
-                    refresh();
+                    l_user.setUser_stanKonta(t.zmianaStanu(l_user.getUser_stanKonta(),l_user.getUser_login(),1));
+                    refresh_data();
                 }catch (SQLException ex){
                     JOptionPane.showMessageDialog(null,ex.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
                 }catch (ClassNotFoundException ex){
@@ -71,9 +72,47 @@ public class KontoGUI {
                 }
             }
         });
+        wypłaćButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Transakcje t=new Transakcje(l_user," "," ",kwota.getText(),"Wypłata środków","Wypłata");
+                try {
+
+                    l_user.setUser_stanKonta(t.zmianaStanu(l_user.getUser_stanKonta(),l_user.getUser_login(),-1));
+                    refresh_data();
+                }catch (SQLException ex){
+                    JOptionPane.showMessageDialog(null,ex.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
+                }catch (ClassNotFoundException ex){
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        tabbedPane1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                try {
+                    table();
+                }catch (SQLException ex){
+                    ex.printStackTrace();
+                }catch (ClassNotFoundException ex){
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        wylogujButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                frame.dispose();
+                UwierzytelnianieGUI.showGUI();
+            }
+        });
     }
 
-    public void refresh(){
+    public void refresh_data(){
         textField1.setText(l_user.getUser_nrKonta());
         textField2.setText(l_user.getUser_stanKonta());
         txImie.setText(l_user.getUser_imie());
@@ -95,16 +134,20 @@ public class KontoGUI {
         frame.pack();
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
-        frame.setSize(600,300);
+        frame.setSize(700,300);
         frame.setVisible(true);
     }
     public  void table()throws SQLException,ClassNotFoundException{
         PreparedStatement pst=MysqlConnection.Connect().prepareStatement("select * from transakcje where NrKontaOdbiorcy=? or NrKontaNadawcy=?");
         pst.setString(1,l_user.getUser_nrKonta());
         pst.setString(2,l_user.getUser_nrKonta());
+
         ResultSet rs=pst.executeQuery();
         table11.setModel(DbUtils.resultSetToTableModel(rs));
 
+    }
+    public void inform(){
+        textField3.setText(zegar.aktualnyCzas);
     }
 
     public static void main(String[] args) {

@@ -17,7 +17,8 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
-
+import java.util.Random;
+import java.util.List;
 
 public class NoweKontoGUI {
     private JTextField textField1;
@@ -79,19 +80,19 @@ public class NoweKontoGUI {
     }
     public void stworzKonto(){
         if(textField1.getText().isEmpty() ||textField2.getText().isEmpty() ||textField3.getText().isEmpty() ||textField4.getText().isEmpty() ||textField5.getText().isEmpty() ||textField6.getText().isEmpty() ||textField7.getText().isEmpty() ||textField8.getText().isEmpty() ||textField9.getText().isEmpty() ||textField10.getText().isEmpty() ||
-<<<<<<< .mine
-                textField11.getText().isEmpty() || String.valueOf(passwordField1.getPassword()).isEmpty() || String.valueOf(passwordField1.getPassword()).isEmpty()||JComboBox1.getSelectedIndex()==0 ||JcomboBox2.getSelectedIndex()==0){
-||||||| .r3988
-                textField11.getText().isEmpty() || String.valueOf(passwordField1.getPassword()).isEmpty() || String.valueOf(passwordField1.getPassword()).isEmpty()||JComboBox1.getSelectedIndex()!=1 ||JcomboBox2.getSelectedIndex()!=1){
-=======
                 textField11.getText().isEmpty() || String.valueOf(passwordField1.getPassword()).isEmpty() || String.valueOf(passwordField1.getPassword()).isEmpty()||JComboBox1.getSelectedIndex()<1 ||JcomboBox2.getSelectedIndex()<1){
->>>>>>> .r3993
             JOptionPane.showMessageDialog(null,"Uzupełnij wszystkie pola!","Błąd",JOptionPane.ERROR_MESSAGE);
         }else{
+
+            Random gen = new Random();
+
             String user_haslo=String.valueOf(passwordField1.getPassword());
             String user_login=textField11.getText() ;
             String user_stanKonta="0" ;
-            String user_nrKonta="100" ;  //!!!Dorobić losowanie niepowtarzalnego numeru konta!!!!////
+            String user_nrKonta="" ;
+            for (int i=0; i<14; i++) {
+                user_nrKonta=user_nrKonta+Integer.toString(gen.nextInt(10));
+            }
             String user_nazwisko=textField2.getText();
             String user_imie=textField1.getText() ;
             String user_pesel=textField3.getText() ;
@@ -114,7 +115,7 @@ public class NoweKontoGUI {
             JOptionPane.showMessageDialog(null,"Niepoprawny PESEL","Błąd",JOptionPane.ERROR_MESSAGE);
         }else {
             try {
-                User user=new User(user_haslo,user_login,user_stanKonta,user_nrKonta,user_nazwisko,user_imie,user_pesel,user_nrBudynku,user_mieszkania,user_miejscowosc,user_kodPocztowy,user_email,user_nrTel,user_narodowosc,user_plec);
+                User user=new User(user_haslo,user_login,user_stanKonta,user_nrKonta,user_nazwisko,user_imie,user_pesel,user_ulica,user_nrBudynku,user_mieszkania,user_miejscowosc,user_kodPocztowy,user_email,user_nrTel,user_narodowosc,user_plec);
                 if (user.newUser()) {
                     JOptionPane.showMessageDialog(null,"Konto utworzone!Teraz możesz się zalogować.","Sukces",JOptionPane.INFORMATION_MESSAGE);
                     frame.dispose();
@@ -123,9 +124,9 @@ public class NoweKontoGUI {
                 }
             }catch (SQLException exc){
                 String error=exc.getMessage();
-                if(error.contains("user_login")){
+                if(error.contains("Login")){
                     JOptionPane.showMessageDialog(null,"Podany login już istnieje!","Bład",JOptionPane.ERROR_MESSAGE);
-                }else if (error.contains(user_email)){
+                }else if (error.contains("Email")){
                     JOptionPane.showMessageDialog(null,"Podany email jest już skojarzony z istniejącym kontem!","Bład",JOptionPane.ERROR_MESSAGE);
                 }
             }catch (ClassNotFoundException e){

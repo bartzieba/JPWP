@@ -24,7 +24,7 @@ public class User {
     public User() { //konstruktor//
 
     }
-    public User(String user_haslo,String user_login,String user_stanKonta,String user_nrKonta,String user_nazwisko,String user_imie,String user_pesel,String user_nrBudynku,String user_mieszkania,String user_miejscowosc,String user_kodPocztowy,String user_email,String user_nrTel,String user_narodowosc,String user_plec){
+    public User(String user_haslo,String user_login,String user_stanKonta,String user_nrKonta,String user_nazwisko,String user_imie,String user_pesel,String user_ulica,String user_nrBudynku,String user_mieszkania,String user_miejscowosc,String user_kodPocztowy,String user_email,String user_nrTel,String user_narodowosc,String user_plec){
         this.user_haslo=user_haslo;
         this.user_login=user_login;
         this.user_stanKonta=user_stanKonta ;
@@ -44,8 +44,7 @@ public class User {
 
     }
 
-    public User(User client) {
-    }
+
 
 
     public boolean login(String user_login,String user_haslo)throws LoginException,SQLException,ClassNotFoundException {
@@ -57,8 +56,8 @@ public class User {
         ps.setString(2,user_haslo);
         rs=ps.executeQuery();
         if(rs.next()){
-            this.user_haslo=rs.getString(14);
-            this.user_login=rs.getString(15);
+            this.user_haslo=rs.getString(15);
+            this.user_login=rs.getString(14);
             this.user_stanKonta=rs.getString(16);
             this.user_nrKonta=rs.getString(1);
             this.user_nazwisko=rs.getString(2);
@@ -98,6 +97,8 @@ public class User {
         ps.setString(15,user_haslo);
         ps.setString(16,user_stanKonta);
         if(ps.executeUpdate()>0){
+            ps.close();
+            MysqlConnection.Connect().close();
             return true;
         }else {
             throw new NewUserException("Rejestracja nie powiodła się");

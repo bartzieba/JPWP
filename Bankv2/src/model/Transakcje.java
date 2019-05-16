@@ -7,6 +7,8 @@ import jdk.nashorn.internal.scripts.JO;
 
 import javax.swing.*;
 import java.sql.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,18 +40,38 @@ public class Transakcje extends User {
     }
 
 
-     public  String wplata(String stanKonta,String login)throws SQLException,ClassNotFoundException{
-        int stan1=Integer.parseInt(stanKonta);
-        int wplata=Integer.parseInt(kwota);
-        stan1=stan1+wplata;
+     public  String zmianaStanu (String stanKonta,String login,int typZmiany)throws SQLException,ClassNotFoundException, java.lang.NumberFormatException{
+        try {
 
-        ps= MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='"+stan1+"' where Login='"+login+"'");
-        ps.executeUpdate();
-        JOptionPane.showMessageDialog(null,"Dokonano wpłaty","Sukces",JOptionPane.INFORMATION_MESSAGE);
-        historia();
-        return Integer.toString(stan1);
+            int stan1 = Integer.parseInt(stanKonta);
+            int zmiana = Integer.parseInt(kwota);
+            if(zmiana<=0) throw new java.lang.NumberFormatException();
+            else if (typZmiany > 0) {
+                stan1 = stan1 + zmiana;
+                ps = MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='" + stan1 + "' where Login='" + login + "'");
+                ps.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Dokonano wpłaty", "Sukces", JOptionPane.INFORMATION_MESSAGE);
+                historia();
+                return Integer.toString(stan1);
+            } else {
+                if (stan1 >= zmiana) {
+                    stan1 = stan1 - zmiana;
+                    ps = MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='" + stan1 + "' where Login='" + login + "'");
+                    ps.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Środki wypłacone", "Sukces", JOptionPane.INFORMATION_MESSAGE);
+                    historia();
+                    return Integer.toString(stan1);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Brak środków na koncie!", "Błąd", JOptionPane.ERROR_MESSAGE);
+                    return Integer.toString(stan1);
+                }
+            }
+        }catch(java.lang.NumberFormatException e){
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zły format. Wprowadź dane ponownie", "ERROR", JOptionPane.ERROR_MESSAGE);
+            return stanKonta;
+         }
 
-    }
+        }
     public String przelew() {
         if (nrKontaNadawcy.equals(nrKontaOdbiorcy)){
             JOptionPane.showMessageDialog(null,"Nie możesz wysłać przelewu do samego siebie!","Błąd",JOptionPane.ERROR_MESSAGE);
@@ -75,7 +97,13 @@ public class Transakcje extends User {
                         ps.execute();
                         ps = MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='" + stanKontaOdbiorcy + "' where NrKonta='" + this.nrKontaOdbiorcy + "'");
                         ps.execute();
-
+                        try {
+                            historia();
+                        }catch (SQLException ex){
+                            JOptionPane.showMessageDialog(null,ex.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
+                        }catch (ClassNotFoundException ex){
+                            ex.printStackTrace();
+                        }
                     } else {
                         JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Brak środków na koncie", "ERROR", JOptionPane.ERROR_MESSAGE);
                     }
@@ -91,13 +119,7 @@ public class Transakcje extends User {
         }
     }
 
-    try {
-        historia();
-    }catch (SQLException ex){
-        JOptionPane.showMessageDialog(null,ex.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
-    }catch (ClassNotFoundException ex){
-        ex.printStackTrace();
-    }
+
     return stanKontaNadawcy;
 
     }
@@ -109,7 +131,11 @@ public class Transakcje extends User {
         ps.setString(3,tytul);
         ps.setString(4,imieNazwiskoNadawcy);
         ps.setString(5,adresNadawcy);
-        ps.setString(6," ");
+        GregorianCalendar dzis=new GregorianCalendar();
+        String dzien=String.valueOf(dzis.get(Calendar.DAY_OF_MONTH));
+        String miesiac=String.valueOf(dzis.get(Calendar.MONTH)+1);
+        String rok=String.valueOf(dzis.get(Calendar.YEAR));
+        ps.setString(6,dzien+"-"+miesiac+"-"+rok);
         ps.setString(7,nrKontaOdbiorcy);
         ps.setString(8,nrKontaNadawcy);
         ps.executeUpdate();

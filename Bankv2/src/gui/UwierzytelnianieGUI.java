@@ -20,6 +20,7 @@ public class UwierzytelnianieGUI {
     private JButton zalogujButton;
     public JPanel panel1;
     private JPasswordField haslo;
+    private JButton panelAdministracyjnyButton;
     static JFrame mainframe;
 
     public UwierzytelnianieGUI() {
@@ -35,6 +36,13 @@ public class UwierzytelnianieGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logIn();
+            }
+        });
+        panelAdministracyjnyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainframe.dispose();
+                PanelAdministracyjnyGUI.showGUI();
             }
         });
     }

@@ -25,8 +25,7 @@ public class Transakcje extends User {
     String tytul;
     ResultSet rs;
     PreparedStatement ps;
-    public Transakcje(User client, String ao, String nk, String kw, String tyt,String typTrans) {
-        super(client);
+    public Transakcje(User client, String ao, String nk, String kw, String tyt,String typTrans){
         imieNazwiskoNadawcy = client.getUser_imie()+" "+client.getUser_nazwisko();
         adresNadawcy = client.getUser_miejscowosc()+" "+client.getUser_ulica()+" "+client.getUser_nrBudynku()+" ";
         nrKontaNadawcy =client.getUser_nrKonta();

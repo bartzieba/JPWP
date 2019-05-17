@@ -3,6 +3,8 @@ package model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class User {
     private String user_haslo;
@@ -21,6 +23,7 @@ public class User {
     private String user_nrTel ;
     private String user_narodowosc;
     private String user_plec;
+
     public User() { //konstruktor//
 
     }
@@ -42,6 +45,62 @@ public class User {
         this.user_narodowosc=user_narodowosc;
         this.user_plec=user_plec;
 
+    }
+
+    public boolean wyszukajUzytkownika(String user_nrKonta)throws LoginException,SQLException,ClassNotFoundException {
+
+        PreparedStatement ps;
+        ResultSet rs;
+        ps=MysqlConnection.Connect().prepareStatement("Select * from klienci where NrKonta=?");
+        ps.setString(1,user_nrKonta);
+        rs=ps.executeQuery();
+        if(rs.next()){
+            this.user_haslo=rs.getString(15);
+            this.user_login=rs.getString(14);
+            this.user_stanKonta=rs.getString(16);
+            this.user_nrKonta=rs.getString(1);
+            this.user_nazwisko=rs.getString(2);
+            this.user_imie=rs.getString(3) ;
+            this.user_pesel=rs.getString(4) ;
+            this.user_ulica=rs.getString(5);
+            this.user_nrBudynku=rs.getString(6) ;
+            this.user_mieszkania=rs.getString(7) ;
+            this.user_miejscowosc=rs.getString(8) ;
+            this.user_kodPocztowy=rs.getString(9);
+            this.user_email=rs.getString(10) ;
+            this.user_nrTel=rs.getString(11);
+            this.user_narodowosc=rs.getString(12);
+            this.user_plec=rs.getString(13);
+            return true;
+        }else {
+            throw new LoginException("Podany numer konta nie znajduje się w bazie danych");
+        }
+    }
+
+    public boolean zmienDane(String user_nazwisko_new,String user_imie_new, String user_pesel_new, String user_ulica_new,
+        String user_nrBudynku_new, String user_miejscowosc_new, String user_kodPocztowy_new, String user_email_new,
+        String user_nrTel_new,String user_narodowosc_new,String user_nrKonta_new)throws SQLException,NewUserException,ClassNotFoundException{
+        PreparedStatement ps;
+        ps=MysqlConnection.Connect().prepareStatement("update klienci set Nazwisko=?, Imie=?, PESEL=?, Ulica=?, NrBudynku=?, Miejscowosc=?, KodPocztowy=?, Email=?, NrTel=?, Narodowosc=? where NrKonta=?");
+        ps.setString(1,user_nazwisko_new);
+        ps.setString(2,user_imie_new);
+        ps.setString(3,user_pesel_new);
+        ps.setString(4,user_ulica_new);
+        ps.setString(5,user_nrBudynku_new);
+        ps.setString(6,user_miejscowosc_new);
+        ps.setString(7,user_kodPocztowy_new);
+        ps.setString(8,user_email_new);
+        ps.setString(9,user_nrTel_new);
+        ps.setString(10,user_narodowosc_new);
+        ps.setString(11,user_nrKonta_new);
+
+        if(ps.executeUpdate()>0){
+            ps.close();
+            MysqlConnection.Connect().close();
+            return true;
+        }else {
+            throw new NewUserException("Rejestracja nie powiodła się");
+        }
     }
 
 
@@ -72,6 +131,7 @@ public class User {
             this.user_nrTel=rs.getString(11);
             this.user_narodowosc=rs.getString(12);
             this.user_plec=rs.getString(13);
+
             return true;
         }else {
         throw new LoginException("Błąd! Podaj poprawny login i hasło");

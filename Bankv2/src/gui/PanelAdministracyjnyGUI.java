@@ -3,6 +3,7 @@ package gui;
 import model.LoginException;
 import model.NewUserException;
 import model.User;
+import model.Wiadomosc;
 
 import javax.swing.*;
 
@@ -31,6 +32,8 @@ public class PanelAdministracyjnyGUI {
     private JButton zatwierdźZmianyButton;
     private JButton wróćButton;
     private JTextField stanKonta_textField;
+    private JTextArea wiadomosc_textArea;
+    private JButton wyślijButton;
 
     public PanelAdministracyjnyGUI() {
         szukajButton.addActionListener(new ActionListener() {
@@ -50,6 +53,17 @@ public class PanelAdministracyjnyGUI {
             public void actionPerformed(ActionEvent e) {
                 mainframe.dispose();
                 UwierzytelnianieGUI.showGUI();
+            }
+        });
+        wyślijButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                Wiadomosc info = new Wiadomosc(wiadomosc_textArea.getText());
+                if(info.wyslijWiadomosc()){
+                    wiadomosc_textArea.setText("");
+                }
+
             }
         });
     }

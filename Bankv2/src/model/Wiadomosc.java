@@ -16,6 +16,9 @@ public class Wiadomosc {
         this.tresc = wiadomosc;
         this.data = zwrocDate();
     }
+    public Wiadomosc(){
+
+    }
 
     public boolean wyslijWiadomosc(){
         try {
@@ -34,8 +37,18 @@ public class Wiadomosc {
         return true;
     }
 
-    public void odbierzWiadomosci(){
+    public ResultSet odbierzWiadomosci(){
+        try {
+            ps = MysqlConnection.Connect().prepareStatement("select * from wiadomości");
+            rs = ps.executeQuery();
 
+
+        }catch(java.sql.SQLException e){
+            JOptionPane.showMessageDialog(null,e.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
+        }catch(java.lang.ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return rs;
     }
 
     public String zwrocDate(){

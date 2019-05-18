@@ -4,10 +4,9 @@ import model.*;
 import net.proteanit.sql.DbUtils;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.*;
 import java.sql.*;
 import java.util.Vector;
 
@@ -39,11 +38,13 @@ public class KontoGUI implements Obserwator {
     private JTextField textField3;
     private JButton wypłaćButton;
     private JButton wylogujButton;
+    private JTextPane wiadomosc_textPane;
+    private JTable table1;
     public  Transakcje transakcje;
     Zegar zegar = new Zegar();
 
-    public KontoGUI(User l_user){
-        this.l_user=l_user;
+    public KontoGUI(User l_user) {
+        this.l_user = l_user;
         refresh_data();
         zegar.subscribe(this);
         zegar.uruchom();
@@ -52,7 +53,7 @@ public class KontoGUI implements Obserwator {
         wykonajPrzelewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Transakcje t=new Transakcje(l_user,textField6.getText(),textField4.getText(),textField5.getText(),textField7.getText(),"Przelew");
+                Transakcje t = new Transakcje(l_user, textField6.getText(), textField4.getText(), textField5.getText(), textField7.getText(), "Przelew");
                 l_user.setUser_stanKonta(t.przelew());
                 refresh_data();
             }
@@ -60,14 +61,14 @@ public class KontoGUI implements Obserwator {
         wpłaćButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               Transakcje t=new Transakcje(l_user," "," ",kwota.getText(),"Wpłata środków","Wpłata");
+                Transakcje t = new Transakcje(l_user, " ", " ", kwota.getText(), "Wpłata środków", "Wpłata");
                 try {
 
-                    l_user.setUser_stanKonta(t.zmianaStanu(l_user.getUser_stanKonta(),l_user.getUser_login(),1));
+                    l_user.setUser_stanKonta(t.zmianaStanu(l_user.getUser_stanKonta(), l_user.getUser_login(), 1));
                     refresh_data();
-                }catch (SQLException ex){
-                    JOptionPane.showMessageDialog(null,ex.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
-                }catch (ClassNotFoundException ex){
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
+                } catch (ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -75,14 +76,14 @@ public class KontoGUI implements Obserwator {
         wypłaćButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Transakcje t=new Transakcje(l_user," "," ",kwota.getText(),"Wypłata środków","Wypłata");
+                Transakcje t = new Transakcje(l_user, " ", " ", kwota.getText(), "Wypłata środków", "Wypłata");
                 try {
 
-                    l_user.setUser_stanKonta(t.zmianaStanu(l_user.getUser_stanKonta(),l_user.getUser_login(),-1));
+                    l_user.setUser_stanKonta(t.zmianaStanu(l_user.getUser_stanKonta(), l_user.getUser_login(), -1));
                     refresh_data();
-                }catch (SQLException ex){
-                    JOptionPane.showMessageDialog(null,ex.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
-                }catch (ClassNotFoundException ex){
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Błąd", JOptionPane.ERROR_MESSAGE);
+                } catch (ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -94,9 +95,10 @@ public class KontoGUI implements Obserwator {
                 super.mouseClicked(e);
                 try {
                     table();
-                }catch (SQLException ex){
+                    wiadomosci();
+                } catch (SQLException ex) {
                     ex.printStackTrace();
-                }catch (ClassNotFoundException ex){
+                } catch (ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -108,6 +110,17 @@ public class KontoGUI implements Obserwator {
 
                 frame.dispose();
                 UwierzytelnianieGUI.showGUI();
+            }
+        });
+
+        table1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (table1.isRowSelected(1)) System.out.print("uuu");
+                for (int i = 0; i < table1.getRowCount(); i++) {
+                    if (table1.isRowSelected(i)) wiadomosc_textPane.setText(table1.getValueAt(i, 1).toString());
+                }
             }
         });
     }
@@ -125,6 +138,7 @@ public class KontoGUI implements Obserwator {
         txMiejsco.setText(l_user.getUser_miejscowosc());
         txTelefon.setText(l_user.getUser_nrTel());
         txNarodowosc.setText(l_user.getUser_narodowosc());
+
     }
 
     public static void showGUI(User l_user){
@@ -144,6 +158,13 @@ public class KontoGUI implements Obserwator {
 
         ResultSet rs=pst.executeQuery();
         table11.setModel(DbUtils.resultSetToTableModel(rs));
+
+    }
+    public void wiadomosci()throws SQLException,ClassNotFoundException{
+        PreparedStatement pst2=MysqlConnection.Connect().prepareStatement("select * from wiadomości");
+        ResultSet rs2=pst2.executeQuery();
+        table1.setModel(DbUtils.resultSetToTableModel(rs2));
+
 
     }
     public void inform(){

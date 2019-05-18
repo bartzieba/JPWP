@@ -117,9 +117,10 @@ public class KontoGUI implements Obserwator {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (table1.isRowSelected(1)) System.out.print("uuu");
-                for (int i = 0; i < table1.getRowCount(); i++) {
-                    if (table1.isRowSelected(i)) wiadomosc_textPane.setText(table1.getValueAt(i, 1).toString());
+                if(table1.getRowCount()>1) {
+                    for (int i = 0; i < table1.getRowCount(); i++) {
+                        if (table1.isRowSelected(i)) wiadomosc_textPane.setText(table1.getValueAt(i, 1).toString());
+                    }
                 }
             }
         });

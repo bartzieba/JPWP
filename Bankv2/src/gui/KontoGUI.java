@@ -95,7 +95,7 @@ public class KontoGUI implements Obserwator {
                 super.mouseClicked(e);
                 try {
                     table();
-                    wiadomosci();
+                    //wiadomosci();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 } catch (ClassNotFoundException ex) {
@@ -117,7 +117,7 @@ public class KontoGUI implements Obserwator {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if(table1.getRowCount()>1) {
+                if(table1.getRowCount()>0) {
                     for (int i = 0; i < table1.getRowCount(); i++) {
                         if (table1.isRowSelected(i)) wiadomosc_textPane.setText(table1.getValueAt(i, 1).toString());
                     }
@@ -160,14 +160,15 @@ public class KontoGUI implements Obserwator {
         ResultSet rs=pst.executeQuery();
         table11.setModel(DbUtils.resultSetToTableModel(rs));
 
-    }
-    public void wiadomosci()throws SQLException,ClassNotFoundException{
-        PreparedStatement pst2=MysqlConnection.Connect().prepareStatement("select * from wiadomości");
-        ResultSet rs2=pst2.executeQuery();
-        table1.setModel(DbUtils.resultSetToTableModel(rs2));
-
+        pst=MysqlConnection.Connect().prepareStatement("select * from wiadomosci");
+        rs=pst.executeQuery();
+        table1.setModel(DbUtils.resultSetToTableModel(rs));
 
     }
+    //public void wiadomosci()throws SQLException,ClassNotFoundException{
+    //
+//
+    //}
     public void inform(){
         textField3.setText(zegar.aktualnyCzas);
     }

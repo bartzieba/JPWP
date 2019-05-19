@@ -9,11 +9,11 @@ import javax.swing.*;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Transakcje extends User {
-
     String imieNazwiskoNadawcy;
     String adresNadawcy;
     String nrKontaNadawcy;
@@ -33,13 +33,11 @@ public class Transakcje extends User {
         typ=typTrans;
         adresOdbiorcy = ao;
         nrKontaOdbiorcy = nk;
-
         kwota = kw;
         tytul = tyt;
     }
 
-
-     public  String zmianaStanu (String stanKonta,String login,int typZmiany)throws SQLException,ClassNotFoundException, java.lang.NumberFormatException{
+     public  String zmianaStanu (String stanKonta, String login, int typZmiany)throws SQLException,ClassNotFoundException, java.lang.NumberFormatException{
         try {
 
             int stan1 = Integer.parseInt(stanKonta);
@@ -84,8 +82,17 @@ public class Transakcje extends User {
                 ps.setString(1, this.nrKontaOdbiorcy);
                 rs = ps.executeQuery();
                 if (rs.next()) {
-                    if (stan_int > kwota_int) {
+                    if (stan_int >= kwota_int) {
+                        String kod="";
+                        Random gen = new Random();
 
+                        for (int i=0; i<6; i++) {
+                            kod=kod+Integer.toString(gen.nextInt(10));
+                        }
+                        Sms sms=new Sms(kod);
+                        sms.Sms_wyslij();
+                        String input=JOptionPane.showInputDialog("Podaj kod sms:");
+                        if (input==kod){
                         String stanKontaOdbiorcy = rs.getString("StanKonta");
                         int stan_int2 = Integer.parseInt(stanKontaOdbiorcy);
                         stan_int2 = stan_int2 + kwota_int;
@@ -96,6 +103,9 @@ public class Transakcje extends User {
                         ps.execute();
                         ps = MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='" + stanKontaOdbiorcy + "' where NrKonta='" + this.nrKontaOdbiorcy + "'");
                         ps.execute();
+                        JOptionPane.showMessageDialog(null,"Przelew wykonano prawidłowo","Sukces",JOptionPane.INFORMATION_MESSAGE);} else {
+                            JOptionPane.showMessageDialog(null,"zly kod","Error",JOptionPane.ERROR_MESSAGE);
+                        }
                         try {
                             historia();
                         }catch (SQLException ex){

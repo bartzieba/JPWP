@@ -231,4 +231,5 @@ public class User {
     public void setUser_stanKonta(String user_stanKonta) {
         this.user_stanKonta = user_stanKonta;
     }
+
 }

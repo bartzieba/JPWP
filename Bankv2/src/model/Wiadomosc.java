@@ -16,13 +16,10 @@ public class Wiadomosc {
         this.tresc = wiadomosc;
         this.data = zwrocDate();
     }
-    public Wiadomosc(){
-
-    }
 
     public boolean wyslijWiadomosc(){
         try {
-            ps = MysqlConnection.Connect().prepareStatement("Insert into wiadomosci (tresc,data) value(?,?)");
+            ps = MysqlConnection.Connect().prepareStatement("Insert into wiadomości (treść,data) value(?,?)");
             ps.setString(1, tresc);
             ps.setString(2, data);
             ps.executeUpdate();
@@ -37,18 +34,8 @@ public class Wiadomosc {
         return true;
     }
 
-    public ResultSet odbierzWiadomosci(){
-        try {
-            ps = MysqlConnection.Connect().prepareStatement("select * from wiadomości");
-            rs = ps.executeQuery();
+    public void odbierzWiadomosci(){
 
-
-        }catch(java.sql.SQLException e){
-            JOptionPane.showMessageDialog(null,e.getMessage(),"Błąd",JOptionPane.ERROR_MESSAGE);
-        }catch(java.lang.ClassNotFoundException e){
-            e.printStackTrace();
-        }
-        return rs;
     }
 
     public String zwrocDate(){

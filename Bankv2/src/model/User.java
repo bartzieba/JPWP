@@ -71,6 +71,8 @@ public class User {
             this.user_nrTel=rs.getString(11);
             this.user_narodowosc=rs.getString(12);
             this.user_plec=rs.getString(13);
+            ps.close();
+            MysqlConnection.Connect().close();
             return true;
         }else {
             throw new LoginException("Podany numer konta nie znajduje się w bazie danych");
@@ -131,6 +133,8 @@ public class User {
             this.user_nrTel=rs.getString(11);
             this.user_narodowosc=rs.getString(12);
             this.user_plec=rs.getString(13);
+            ps.close();
+            MysqlConnection.Connect().close();
 
             return true;
         }else {

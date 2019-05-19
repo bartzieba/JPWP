@@ -47,6 +47,8 @@ public class Transakcje extends User {
                 stan1 = stan1 + zmiana;
                 ps = MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='" + stan1 + "' where Login='" + login + "'");
                 ps.executeUpdate();
+                ps.close();
+                MysqlConnection.Connect().close();
                 JOptionPane.showMessageDialog(null, "Dokonano wpłaty", "Sukces", JOptionPane.INFORMATION_MESSAGE);
                 historia();
                 return Integer.toString(stan1);
@@ -55,6 +57,8 @@ public class Transakcje extends User {
                     stan1 = stan1 - zmiana;
                     ps = MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='" + stan1 + "' where Login='" + login + "'");
                     ps.executeUpdate();
+                    ps.close();
+                    MysqlConnection.Connect().close();
                     JOptionPane.showMessageDialog(null, "Środki wypłacone", "Sukces", JOptionPane.INFORMATION_MESSAGE);
                     historia();
                     return Integer.toString(stan1);
@@ -81,6 +85,8 @@ public class Transakcje extends User {
                 ps = MysqlConnection.Connect().prepareStatement("Select * from klienci where NrKonta=?");
                 ps.setString(1, this.nrKontaOdbiorcy);
                 rs = ps.executeQuery();
+                ps.close();
+                MysqlConnection.Connect().close();
                 if (rs.next()) {
                     if (stan_int >= kwota_int) {
                         String kod="";
@@ -103,6 +109,8 @@ public class Transakcje extends User {
                         ps.execute();
                         ps = MysqlConnection.Connect().prepareStatement("update klienci set StanKonta='" + stanKontaOdbiorcy + "' where NrKonta='" + this.nrKontaOdbiorcy + "'");
                         ps.execute();
+                        ps.close();
+                        MysqlConnection.Connect().close();
                         JOptionPane.showMessageDialog(null,"Przelew wykonano prawidłowo","Sukces",JOptionPane.INFORMATION_MESSAGE);} else {
                             JOptionPane.showMessageDialog(null,"zly kod","Error",JOptionPane.ERROR_MESSAGE);
                         }
@@ -148,6 +156,8 @@ public class Transakcje extends User {
         ps.setString(7,nrKontaOdbiorcy);
         ps.setString(8,nrKontaNadawcy);
         ps.executeUpdate();
+        ps.close();
+        MysqlConnection.Connect().close();
 
     }
 }

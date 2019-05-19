@@ -19,7 +19,7 @@ public class Wiadomosc {
 
     public boolean wyslijWiadomosc(){
         try {
-            ps = MysqlConnection.Connect().prepareStatement("Insert into wiadomości (treść,data) value(?,?)");
+            ps = MysqlConnection.Connect().prepareStatement("Insert into wiadomosci (tresc,data) value(?,?)");
             ps.setString(1, tresc);
             ps.setString(2, data);
             ps.executeUpdate();

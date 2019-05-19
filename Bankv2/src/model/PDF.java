@@ -27,7 +27,8 @@ public class PDF {
     }
 
     public void stworzPDF() {
-        String FILE_NAME = "D:\\potwierdzenie.pdf";
+        //String FILE_NAME = "D:\\potwierdzenie.pdf";
+        String FILE_NAME = "C:\\potwierdzenie.pdf";
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(new File(FILE_NAME)));

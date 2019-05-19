@@ -38,6 +38,8 @@ public class KontoGUI implements Obserwator {
     private JButton wypłaćButton;
     private JButton wylogujButton;
     private JButton generujPDFButton;
+    public JTable table1;
+    private JTextPane wiadomosc_textPane;
     public  Transakcje transakcje;
     public String kwota_wiersz;
     public String tytul_wiersz;
@@ -125,6 +127,7 @@ public class KontoGUI implements Obserwator {
 
         });
         table11.addKeyListener(new KeyAdapter() {
+
         });
         table11.addMouseListener(new MouseAdapter() {
             @Override
@@ -137,6 +140,17 @@ public class KontoGUI implements Obserwator {
                 adres_nadawcy_wiersz=table11.getValueAt(wiersz,4).toString();
                 data_wiersz=table11.getValueAt(wiersz,5).toString();
                 nr_konta_nadawcy_wiersz=table11.getValueAt(wiersz,6).toString();
+            }
+        });
+        table1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if(table1.getRowCount()>0) {
+                    for (int i = 0; i < table1.getRowCount(); i++) {
+                        if (table1.isRowSelected(i)) wiadomosc_textPane.setText(table1.getValueAt(i, 1).toString());
+                    }
+                }
             }
         });
     }
@@ -170,11 +184,15 @@ public class KontoGUI implements Obserwator {
         PreparedStatement pst=MysqlConnection.Connect().prepareStatement("select * from transakcje where NrKontaOdbiorcy=? or NrKontaNadawcy=?");
         pst.setString(1,l_user.getUser_nrKonta());
         pst.setString(2,l_user.getUser_nrKonta());
-
         ResultSet rs=pst.executeQuery();
         table11.setModel(DbUtils.resultSetToTableModel(rs));
-
-
+        pst.close();
+        MysqlConnection.Connect().close();
+        pst=MysqlConnection.Connect().prepareStatement("select * from wiadomosci");
+        rs=pst.executeQuery();
+        table1.setModel(DbUtils.resultSetToTableModel(rs));
+        pst.close();
+        MysqlConnection.Connect().close();
     }
     public void inform(){
         textField3.setText(zegar.aktualnyCzas);
